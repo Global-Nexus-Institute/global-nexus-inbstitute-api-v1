@@ -5,6 +5,7 @@
 
 app = 'global-nexus-institute-api-v1'
 primary_region = 'cdg'
+machines = false
 
 [build]
 
