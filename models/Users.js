@@ -1,5 +1,6 @@
 // models/User.js
 const mongoose = require("../config/mongoose");
+const Courses = require("./Courses");
 
 const userSchema = new mongoose.Schema({
   uid: { type: String, required: true, unique: true },
@@ -7,13 +8,14 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: true },
   names: { type: String, required: true },
   role: { type: String, required: true },
-  phoneNumber: { type: String, },
+  phoneNumber: { type: String },
   address: {
-    address: { type: String, },
-    city: { type: String,  },
-    country: { type: String,},
-    zipCode: { type: String, },
+    address: { type: String },
+    city: { type: String },
+    country: { type: String },
+    zipCode: { type: String },
   },
+  courses: [Courses.schema],
   createdAt: { type: Date, default: Date.now },
 });
 
