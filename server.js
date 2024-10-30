@@ -15,8 +15,8 @@ const corsOptions = {
   origin: [
     "http://localhost:3000",
     "http://localhost:3001",
-    "https://global-nexus-institute-landingpage.vercel.app/",
-    "https://global-nexis-institute-admin.vercel.app/",
+    "https://global-nexus-institute-landingpage.vercel.app",
+    "https://global-nexis-institute-admin.vercel.app",
   ], // Specify your frontend origin
   optionsSuccessStatus: 200,
 };
