@@ -32,8 +32,8 @@ router.post("/login", async (req, res) => {
 });
 
 router.post("/signup", async (req, res) => {
-  const { email, password, names, address } = req.body.user;
-  if (!email || !password || !names || !address) {
+  const { email, password, name, address, role, firstName, lastName } = req.body.user;
+  if (!email || !password || !name || !address) {
     return res.status(400).json({ error: "All fields are required" });
   }
 
@@ -67,12 +67,14 @@ router.post("/signup", async (req, res) => {
         uid: userCredential.uid,
         email: email,
         password: hashedPassword,
-        names: names,
+        names: name,
+        firstName: firstName,
+        lastName: lastName,
         address: {
-          address: address.city,
+          streetAddress: address.streetAddress,
           city: address.city,
         },
-        role: "student",
+        role: role,
       });
 
       newUser.save();
