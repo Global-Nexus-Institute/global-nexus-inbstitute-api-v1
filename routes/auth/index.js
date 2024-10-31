@@ -32,7 +32,8 @@ router.post("/login", async (req, res) => {
 });
 
 router.post("/signup", async (req, res) => {
-  const { email, password, name, address, role, firstName, lastName } = req.body.user;
+  const { email, password, name, address, role, firstName, lastName } =
+    req.body.user;
   if (!email || !password || !name || !address) {
     return res.status(400).json({ error: "All fields are required" });
   }
