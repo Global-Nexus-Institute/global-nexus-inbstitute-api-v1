@@ -11,7 +11,7 @@ const courseSchema = new mongoose.Schema({
   student_count: { type: Number, required: true },
   activity_count: { type: Number, required: true },
   main_image: { type: String, required: true },
-  cost: { type: Number, required: true },
+  cost: { type: Number},
   created_at: { type: Date, default: Date.now },
 });
 

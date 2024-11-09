@@ -5,6 +5,8 @@ const { PAYPAL_CLIENT_ID, PAYPAL_SECRET, PAYPAL_API_BASE, BASE_URL } =
   process.env;
 
 const Payment = require("../../models/Payments");
+const Courses = require("../../models/Courses");
+const Users = require("../../models/Users");
 
 // Function to get PayPal access token
 async function getAccessToken() {
@@ -25,7 +27,7 @@ async function getAccessToken() {
 // Create Payment
 router.post("/create-payment", async (req, res) => {
   const { amount, slug, name, courseId, userId } = req.body;
-  console.log(req.body);
+  // console.log(req.body);
 
   if (!amount || !slug || !name || !courseId || !userId) {
     return res.status(400).json({ error: "Missing required fields" });
@@ -71,7 +73,7 @@ router.post("/create-payment", async (req, res) => {
       },
     );
 
-    console.log("paymentResponse", paymentResponse.data);
+    // console.log("paymentResponse", paymentResponse.data);
     if (paymentResponse.data.status === "CREATED") {
       const paymentRecord = {
         courseId: courseId,
@@ -103,12 +105,48 @@ router.post("/capture-payment", async (req, res) => {
         headers: { Authorization: `Bearer ${accessToken}` },
       },
     );
-    console.log("captureResponse: ", captureResponse.data);
+    // console.log("captureResponse: ", captureResponse.data);
     if (captureResponse.data.status === "COMPLETED") {
       const paymentRecord = {
         paymentStatus: "COMPLETED",
       };
-      await Payment.findOneAndUpdate({ transactionId: orderID }, paymentRecord);
+
+      try {
+        // Fetch the payment record
+        const payment = await Payment.findOne({ transactionId: orderID });
+
+        if (!payment) {
+          return res.status(404).json({ error: "Payment not found" });
+        }
+
+        // Fetch the course and user
+        const course = await Courses.findOne({ uuid: payment.courseId });
+        const user = await Users.findById(payment.userId);
+
+        if (!course || !user) {
+          return res.status(404).json({ error: "Course or User not found" });
+        }
+
+        // Add the course to the user's courses array
+        user.courses.push(course); // Use push() instead of append
+        await user.save(); // Save the updated user document
+
+        // Update the payment status
+        await Payment.findOneAndUpdate(
+          { transactionId: orderID },
+          paymentRecord,
+        );
+
+        console.log(
+          "User courses updated:",
+          user.courses,
+          "Course UUID:",
+          course.uuid,
+        );
+      } catch (error) {
+        console.error("Error updating user or payment:", error);
+        return res.status(500).json({ error: "Internal server error" });
+      }
     }
     res.json(captureResponse.data);
   } catch (error) {
@@ -127,10 +165,10 @@ router.post("/get-payment-status", async (req, res) => {
       console.log("Error finding payment: ", error.message);
       return null;
     });
-    console.log("payment status: ", paymentRecord.paymentStatus);
+    console.log("payment status: ", paymentRecord);
     if (paymentRecord === null)
       return res.status(200).json({ paymentStatus: null });
-    return res.status(200).json({ paymentStatus: paymentRecord.paymentStatus });
+    return res.status(200).json({ paymentStatus: paymentRecord });
   } catch (err) {
     return res.status(400).json({ paymentStatus: null, error: err.message });
   }
