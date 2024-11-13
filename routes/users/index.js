@@ -19,6 +19,36 @@ router.get("/", async (req, res) => {
   }
 });
 
+// get students
+router.get("/students", async (req, res) => {
+  try {
+    const users = await Users.find({ role: "student" });
+    users.forEach((user) => {
+      users["_id"] = user._id.toString();
+    });
+    return res.status(200).json(users);
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ error: "Internal server error " + error.message });
+  }
+});
+
+// get staff
+router.get("/staff", async (req, res) => {
+  try {
+    const users = await Users.find({ role: { $in: ["superadmin", "admin"] } });
+    users.forEach((user) => {
+      users["_id"] = user._id.toString();
+    });
+    return res.status(200).json(users);
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ error: "Internal server error " + error.message });
+  }
+});
+
 // get a user
 router.get("/:id", authMiddleware, async (req, res) => {
   const userId = req.params.id;
@@ -55,11 +85,8 @@ router.post("/create-user", authMiddleware, async (req, res) => {
     await newUser.save();
     res.json({ message: "Hello World!", user: newUser });
   } catch (error) {
-    res
-      .status(500)
-      .json({ error: "Internal server error " + error.message });
+    res.status(500).json({ error: "Internal server error " + error.message });
   }
 });
-
 
 module.exports = router;
