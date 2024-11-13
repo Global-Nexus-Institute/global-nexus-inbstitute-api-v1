@@ -34,7 +34,7 @@ router.post("/login", async (req, res) => {
 router.post("/signup", async (req, res) => {
   const { email, password, name, address, role, firstName, lastName } =
     req.body.user;
-  if (!email || !password || !name || !address) {
+  if (!email || !password || !firstName || !address) {
     return res.status(400).json({ error: "All fields are required" });
   }
 
@@ -81,7 +81,7 @@ router.post("/signup", async (req, res) => {
       newUser.save();
       return res
         .status(201)
-        .json({ message: "User created successfully", user: newUser.uid });
+        .json({ message: "User created successfully", user: newUser });
     }
   } catch (error) {
     res.status(500).json({ error: "Internal server error " + error.message });
