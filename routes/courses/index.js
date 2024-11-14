@@ -64,4 +64,24 @@ router.post("/update-courses", async (req, res) => {
   }
 });
 
+router.put("/cost/:id", authMiddleware, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { cost } = req.body;
+    const course = await Courses.findById(id);
+    if (!course) {
+      return res.status(404).json({ message: "Course not found" });
+    }
+    course.cost = cost;
+    await course.save();
+    return res
+      .status(200)
+      .json({ message: "Cost updated successfully", course: course });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ error: "Internal server error " + error.message });
+  }
+});
+
 module.exports = router;
