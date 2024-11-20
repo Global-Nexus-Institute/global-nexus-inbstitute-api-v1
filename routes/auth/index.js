@@ -10,6 +10,7 @@ const Users = require("../../models/Users");
 
 // password validation
 const { validatePassword } = require("../../helpers");
+const authMiddleware = require("../../middleware/auth");
 
 router.post("/login", async (req, res) => {
   const token = req.body.token;
@@ -94,6 +95,16 @@ router.get("/logout", (req, res) => {
 
 router.post("/reset-password", (req, res) => {
   res.json({ message: "Hello World!" });
+});
+
+router.get("/user/:uid", authMiddleware, (req, res) => {
+  try {
+    const uid = req.params.uid;
+    const user = Users.findById(uid);
+    return res.status(200).json(user);
+  } catch(error){
+    res.status(500).json({ error: "Internal server error " + error.message });
+  }
 });
 
 module.exports = router;
