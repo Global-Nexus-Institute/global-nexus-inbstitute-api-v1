@@ -97,10 +97,10 @@ router.post("/reset-password", (req, res) => {
   res.json({ message: "Hello World!" });
 });
 
-router.get("/user/:uid", authMiddleware, (req, res) => {
+router.get("/user/:uid", authMiddleware, async(req, res) => {
   try {
-    const uid = req.params.uid;
-    const user = Users.findById(uid);
+    const {uid} = req.params;
+    const user = await Users.findOne({ uid: uid });
     return res.status(200).json(user);
   } catch(error){
     res.status(500).json({ error: "Internal server error " + error.message });
