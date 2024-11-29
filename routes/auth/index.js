@@ -61,6 +61,7 @@ router.post("/signup", async (req, res) => {
       const userCredential = await firebase
         .auth()
         .createUser({ email, password });
+        await userCredential.sendEmailVerification();
       console.log("this user", userCredential);
       const hashedPassword = await bcrypt.hashSync(password, 10);
 
