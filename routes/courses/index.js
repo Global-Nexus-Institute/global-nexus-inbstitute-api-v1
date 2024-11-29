@@ -29,6 +29,7 @@ router.get("/", async (req, res) => {
 router.post("/update-courses", async (req, res) => {
   const headers = {
     accept: "application/json",
+    "Content-Type": "application/json",
     Authorization: apiKey,
   };
 
