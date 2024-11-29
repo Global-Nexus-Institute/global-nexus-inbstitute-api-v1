@@ -26,6 +26,18 @@ router.get("/", async (req, res) => {
   }
 });
 
+router.get("/:slug", async (req, res) => {
+  try {
+    const { slug } = req.params;
+    const course = await Courses.findOne({ slug: slug });
+    return res.status(200).json({ course });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ error: "Internal server error " + error.message });
+  }
+});
+
 router.post("/update-courses", async (req, res) => {
   const headers = {
     accept: "application/json",
@@ -51,7 +63,7 @@ router.post("/update-courses", async (req, res) => {
         await Courses.updateOne(
           { uuid: course_id }, // Find course by unique ID
           { $set: otherFields }, // Replace the document with new data
-          {upsert: true}, // Insert if it doesn't exist
+          { upsert: true }, // Insert if it doesn't exist
         );
       }
 
